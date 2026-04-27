@@ -789,5 +789,25 @@ f(x) = {|ax-4|/(x-b)  (x<4/a 또는 x>b), ab/(x-b)  (-4/a≤x≤b)}
     solution: `(ⅰ) a>0: a=2, b=4 만족
 (ⅱ) a<0: a=-1, b=-3 만족
 ∴ a₁×b₁×a₂×b₂ = 2×4×(-1)×(-3) = 24`
+  }  ,{
+    id: "2025_10월_고1_1번",
+    year: 2025, month: 10, grade: 1, num: 1,
+    unit: "다항식",
+    score: 2,
+    type: "선택형",
+    answer: "④",
+    answerNum: 4,
+    keywords: ["다항식", "뺄셈", "동류항"],
+    problem: `두 다항식
+A = 2x² + xy - 2y,  B = x² + xy + y
+에 대하여 A - B는? [2점]
+
+① -x² - xy   ② -x² - 3y   ③ x² - xy
+④ x² - 3y   ⑤ x² + y`,
+    choices: ["-x² - xy", "-x² - 3y", "x² - xy", "x² - 3y", "x² + y"],
+    keyPoint: "A-B = (2x²+xy-2y)-(x²+xy+y) = x²-3y. 동류항끼리 계산",
+    solution: `A - B = (2x² + xy - 2y) - (x² + xy + y)
+= (2-1)x² + (1-1)xy + (-2-1)y
+= x² - 3y`
   }
 ];
