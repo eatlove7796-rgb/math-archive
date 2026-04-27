@@ -206,13 +206,6 @@ function buildImgUrls(p) {
   const yy = String(p.year).slice(2);
   const mm = String(p.month).padStart(2, '0');
   const nn = String(p.num).padStart(2, '0');
-
-  // 구형 파일명 (2026년 3월 고2) - GitHub에 올라간 실제 파일명
-  if (p.year === 2026 && p.month === 3 && p.grade === 2) {
-    const base = `${GITHUB_IMG_BASE}/26_03_%23Uace02_${nn}`;
-    return { q: `${base}_Q.jpg`, aBase: `${base}` };
-  }
-  // 신규 형식
   const base = `${GITHUB_IMG_BASE}/${yy}_${mm}_고${p.grade}_${nn}`;
   return { q: `${base}_Q.jpg`, aBase: base };
 }
