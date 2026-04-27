@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수학 기출문제 검색 · 전국연합학력평가</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #0d3321;
+    --green-800: #14532d;
+    --green-700: #15803d;
+    --green-600: #16a34a;
+    --green-500: #22c55e;
+    --green-400: #4ade80;
+    --green-300: #86efac;
+    --green-100: #dcfce7;
+    --green-50: #f0fdf4;
+    --cream: #fafaf7;
+    --text-primary: #0d3321;
+    --text-secondary: #4a7c59;
+    --border: #bbf7d0;
+    --shadow: 0 4px 24px rgba(13,51,33,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: var(--cream); color: var(--text-primary); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--green-900);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  }
+  .logo { font-family: 'Nanum Myeongjo', serif; font-size: 1.25rem; font-weight: 800; color: var(--green-400); letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+  .logo-dot { width: 8px; height: 8px; background: var(--green-500); border-radius: 50%; }
+  .header-badge { font-size: 0.72rem; font-weight: 600; background: var(--green-700); color: var(--green-300); padding: 4px 10px; border-radius: 20px; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, var(--green-900) 0%, var(--green-800) 60%, var(--green-700) 100%); padding: 56px 40px 48px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(74,222,128,0.12) 0%, transparent 70%); border-radius: 50%; }
+  .hero-label { font-size: 0.75rem; font-weight: 600; color: var(--green-400); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .hero h1 { font-family: 'Nanum Myeongjo', serif; font-size: 2.4rem; font-weight: 800; color: #ffffff; line-height: 1.3; margin-bottom: 10px; }
+  .hero p { color: var(--green-300); font-size: 0.95rem; margin-bottom: 36px; font-weight: 300; }
+  .search-area { max-width: 680px; margin: 0 auto; position: relative; z-index: 1; }
+  .search-box { display: flex; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.22); border: 2px solid transparent; transition: border-color 0.2s; }
+  .search-box:focus-within { border-color: var(--green-500); }
+  .search-input { flex: 1; padding: 16px 20px; font-size: 1rem; border: none; outline: none; font-family: 'Pretendard', sans-serif; color: var(--text-primary); }
+  .search-input::placeholder { color: #aaa; }
+  .search-btn { background: var(--green-600); color: white; border: none; padding: 0 28px; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: 'Pretendard', sans-serif; transition: background 0.2s; }
+  .search-btn:hover { background: var(--green-700); }
+
+  /* FILTERS */
+  .filters-wrap { background: white; border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; position: sticky; top: 64px; z-index: 90; }
+  .filter-label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+  .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-chip { font-size: 0.78rem; padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--green-50); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; font-family: 'Pretendard', sans-serif; font-weight: 500; }
+  .filter-chip:hover, .filter-chip.active { background: var(--green-600); color: white; border-color: var(--green-600); }
+  .filter-divider { width: 1px; height: 20px; background: var(--border); }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+  .stats-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .result-count { font-size: 0.85rem; color: var(--text-secondary); }
+  .result-count strong { color: var(--text-primary); font-size: 1rem; }
+
+  /* GRADE FILTER */
+  .grade-filter { display: flex; gap: 8px; }
+  .grade-chip { font-size: 0.78rem; padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--green-50); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; font-family: 'Pretendard', sans-serif; font-weight: 500; }
+  .grade-chip:hover, .grade-chip.active { background: var(--green-800); color: white; border-color: var(--green-800); }
+
+  /* CARD */
+  .card { background: white; border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px; overflow: hidden; transition: box-shadow 0.2s; animation: fadeUp 0.3s ease both; }
+  .card:hover { box-shadow: 0 8px 32px rgba(13,51,33,0.14); }
+  .card-header { display: flex; align-items: center; gap: 14px; padding: 18px 24px; cursor: pointer; user-select: none; }
+  .problem-id { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); min-width: 160px; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+  .tag { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; border: 1.5px solid; }
+  .tag-unit { background: var(--green-50); color: var(--green-700); border-color: var(--green-300); }
+  .tag-score { color: white; border-color: transparent; }
+  .tag-score.s2 { background: #64748b; }
+  .tag-score.s3 { background: #0284c7; }
+  .tag-score.s4 { background: #dc2626; }
+  .expand-btn { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+  .expand-icon { transition: transform 0.25s; font-size: 0.7rem; }
+  .card.open .expand-icon { transform: rotate(180deg); }
+
+  /* KEY POINT */
+  .key-point { display: flex; align-items: baseline; gap: 10px; padding: 10px 24px; background: var(--green-50); border-top: 1px solid var(--green-100); border-bottom: 1px solid var(--green-100); }
+  .key-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--green-600); white-space: nowrap; }
+  .key-text { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+
+  /* CARD BODY */
+  .card-body { display: none; border-top: 2px solid var(--green-100); }
+  .card.open .card-body { display: block; }
+  .problem-section, .solution-section { padding: 24px 28px; }
+  .problem-section { border-bottom: 1px solid var(--green-50); }
+  .section-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* IMAGES */
+  .exam-img-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #fff; text-align: center; margin-bottom: 10px; }
+  .exam-img { max-width: 100%; display: block; margin: 0 auto; cursor: zoom-in; transition: transform 0.2s; }
+  .exam-img:hover { transform: scale(1.01); }
+  .img-loading { padding: 40px; color: var(--text-secondary); font-size: 0.85rem; text-align: center; }
+  .img-error { display: none; }
+
+  /* TEXT FALLBACK */
+  .problem-text { font-size: 0.92rem; line-height: 1.9; color: var(--text-primary); white-space: pre-line; }
+  .choices { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .choice { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; line-height: 1.6; padding: 6px 12px; border-radius: 8px; }
+  .choice:hover { background: var(--green-50); }
+  .choice.correct { background: var(--green-100); border: 1.5px solid var(--green-400); font-weight: 600; color: var(--green-800); }
+  .choice-num { font-weight: 700; color: var(--green-600); min-width: 18px; }
+  .answer-badge { display: inline-flex; align-items: center; background: var(--green-700); color: white; font-size: 0.82rem; font-weight: 700; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .solution-text { font-size: 0.88rem; line-height: 1.9; color: #334155; white-space: pre-line; }
+
+  /* NO RESULT */
+  .no-result { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
+  .no-result-icon { font-size: 3rem; margin-bottom: 16px; }
+
+  /* ZOOM */
+  .zoom-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 20px; cursor: zoom-out; }
+  .zoom-overlay.open { display: flex; }
+  .zoom-overlay img { max-width: 95vw; max-height: 92vh; border-radius: 6px; }
+  .zoom-close-btn { position: fixed; top: 14px; right: 18px; color: #fff; font-size: 2rem; cursor: pointer; opacity: 0.75; }
+  .zoom-close-btn:hover { opacity: 1; }
+
+  @media (max-width: 700px) {
+    header, .filters-wrap, .main { padding-left: 16px; padding-right: 16px; }
+    .hero { padding: 40px 16px 36px; }
+    .hero h1 { font-size: 1.7rem; }
+    .problem-id { min-width: 110px; font-size: 0.85rem; }
+    .filters-wrap { top: 56px; }
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-dot"></div>수학 기출 아카이브</div>
+  <span class="header-badge">2022 교육과정 · 공통수학</span>
+</header>
+
+<div class="hero">
+  <div class="hero-label">전국연합학력평가</div>
+  <h1>수학 기출문제 검색</h1>
+  <p>단원별 · 배점별로 핵심 기출문제를 빠르게 찾아보세요</p>
+  <div class="search-area">
+    <div class="search-box">
+      <input class="search-input" id="searchInput" type="text" placeholder="단원명, 키워드, 문제번호 검색... (예: 복소수, 이차함수)">
+      <button class="search-btn" onclick="doSearch()">검색</button>
+    </div>
+  </div>
+</div>
+
+<div class="filters-wrap">
+  <span class="filter-label">학년</span>
+  <div class="filter-group" id="gradeFilters">
+    <span class="filter-chip active" data-grade="all">전체</span>
+    <span class="filter-chip" data-grade="1">고1</span>
+    <span class="filter-chip" data-grade="2">고2</span>
+  </div>
+  <div class="filter-divider"></div>
+  <span class="filter-label">배점</span>
+  <div class="filter-group" id="scoreFilters">
+    <span class="filter-chip active" data-score="all">전체</span>
+    <span class="filter-chip" data-score="2">2점</span>
+    <span class="filter-chip" data-score="3">3점</span>
+    <span class="filter-chip" data-score="4">4점</span>
+  </div>
+  <div class="filter-divider"></div>
+  <span class="filter-label">단원</span>
+  <div class="filter-group" id="unitFilters">
+    <span class="filter-chip active" data-unit="all">전체</span>
+    <span class="filter-chip" data-unit="다항식">다항식</span>
+    <span class="filter-chip" data-unit="방정식과부등식">방정식과 부등식</span>
+    <span class="filter-chip" data-unit="경우의수">경우의 수</span>
+    <span class="filter-chip" data-unit="행렬">행렬</span>
+    <span class="filter-chip" data-unit="도형의방정식">도형의 방정식</span>
+    <span class="filter-chip" data-unit="집합과명제">집합과 명제</span>
+    <span class="filter-chip" data-unit="함수와그래프">함수와 그래프</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats-bar">
+    <div class="result-count" id="resultCount"><strong>0</strong>개 문항</div>
+  </div>
+  <div id="cardsGrid"></div>
+</div>
+
+<div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+  <span class="zoom-close-btn" onclick="closeZoom()">✕</span>
+  <img id="zoomOverlayImg" src="" alt="확대">
+</div>
+
+<script src="data.js"></script>
+<script>
+// ── 이미지 URL 생성 ──────────────────────────────────────────
+// 기존 고2 3월: 파일명에 #Uace02 포함된 구형 형식
+// 신규: YY_MM_고N_NN_Q.jpg 형식
+function buildImgUrls(p) {
+  const yy = String(p.year).slice(2);
+  const mm = String(p.month).padStart(2, '0');
+  const nn = String(p.num).padStart(2, '0');
+
+  // 구형 파일명 (2026년 3월 고2) - GitHub에 올라간 실제 파일명
+  if (p.year === 2026 && p.month === 3 && p.grade === 2) {
+    const base = `${GITHUB_IMG_BASE}/26_03_%23Uace02_${nn}`;
+    return { q: `${base}_Q.jpg`, aBase: `${base}` };
+  }
+  // 신규 형식
+  const base = `${GITHUB_IMG_BASE}/${yy}_${mm}_고${p.grade}_${nn}`;
+  return { q: `${base}_Q.jpg`, aBase: base };
+}
+
+// ── 상태 ──────────────────────────────────────────────────────
+let filteredProblems = [...PROBLEMS];
+let activeGrade = 'all';
+let activeScore = 'all';
+let activeUnit = 'all';
+let searchKeyword = '';
+
+// ── 초기화 ───────────────────────────────────────────────────
+function init() {
+  document.querySelectorAll('#gradeFilters .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#gradeFilters .filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeGrade = chip.dataset.grade;
+      applyFilters();
+    });
+  });
+  document.querySelectorAll('#scoreFilters .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#scoreFilters .filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeScore = chip.dataset.score;
+      applyFilters();
+    });
+  });
+  document.querySelectorAll('#unitFilters .filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#unitFilters .filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeUnit = chip.dataset.unit;
+      applyFilters();
+    });
+  });
+  document.getElementById('searchInput').addEventListener('keyup', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+  renderCards(PROBLEMS);
+}
+
+function doSearch() {
+  searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
+  applyFilters();
+}
+
+function applyFilters() {
+  filteredProblems = PROBLEMS.filter(p => {
+    const gradeOk = activeGrade === 'all' || p.grade === parseInt(activeGrade);
+    const scoreOk = activeScore === 'all' || p.score === parseInt(activeScore);
+    const unitOk = activeUnit === 'all' || p.unit === activeUnit;
+    const kwOk = !searchKeyword ||
+      p.id.toLowerCase().includes(searchKeyword) ||
+      p.unit.includes(searchKeyword) ||
+      p.keywords.some(k => k.includes(searchKeyword)) ||
+      p.problem.includes(searchKeyword) ||
+      p.keyPoint.includes(searchKeyword);
+    return gradeOk && scoreOk && unitOk && kwOk;
+  });
+  renderCards(filteredProblems);
+}
+
+// ── 카드 렌더링 ───────────────────────────────────────────────
+function renderCards(problems) {
+  const grid = document.getElementById('cardsGrid');
+  const count = document.getElementById('resultCount');
+  count.innerHTML = `<strong>${problems.length}</strong>개 문항`;
+
+  if (problems.length === 0) {
+    grid.innerHTML = `<div class="no-result"><div class="no-result-icon">🔍</div><h3>검색 결과가 없습니다</h3><p>다른 키워드나 필터를 시도해보세요</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = problems.map((p, i) => {
+    const scoreClass = p.score === 2 ? 's2' : p.score === 3 ? 's3' : 's4';
+    const urls = buildImgUrls(p);
+
+    // 문제 섹션: 이미지 우선, 없으면 텍스트
+    const problemSection = `
+      <div class="problem-section">
+        <div class="section-title">문제</div>
+        <div class="exam-img-wrap" id="qwrap-${p.id}">
+          <img class="exam-img" 
+               src="${urls.q}" 
+               alt="문제 ${p.num}"
+               onclick="openZoom(this.src)"
+               onerror="handleImgError(this, '${p.id}', 'q')">
+        </div>
+        <div id="qtxt-${p.id}" style="display:none">
+          ${p.figure ? `<div class="problem-text">${p.problem}</div>${p.figure}` : `<div class="problem-text">${p.problem}</div>`}
+          ${p.choices.length > 0 ? `<div class="choices">${p.choices.map((c,idx)=>{
+            const isCorrect = p.answerNum === idx+1;
+            return `<div class="choice ${isCorrect?'correct':''}"><span class="choice-num">${['①','②','③','④','⑤'][idx]}</span><span>${c}${isCorrect?' ✓':''}</span></div>`;
+          }).join('')}</div>` : ''}
+        </div>
+      </div>`;
+
+    // 해설 섹션: 이미지 우선, 없으면 텍스트
+    const solutionSection = `
+      <div class="solution-section">
+        <div class="section-title">해설</div>
+        <div class="answer-badge">정답: ${p.answer}</div>
+        <div id="awrap-${p.id}">
+          <div class="exam-img-wrap">
+            <img class="exam-img"
+                 src="${urls.aBase}_A.jpg"
+                 alt="풀이 ${p.num}"
+                 onclick="openZoom(this.src)"
+                 onerror="handleAnsImgError(this, '${p.id}', '${urls.aBase}', 1)">
+          </div>
+        </div>
+        <div id="atxt-${p.id}" style="display:none">
+          <div class="solution-text">${p.solution}</div>
+        </div>
+      </div>`;
+
+    return `<div class="card" id="card-${p.id}" style="animation-delay:${i*0.03}s">
+      <div class="card-header" onclick="toggleCard('${p.id}')">
+        <div class="problem-id">${p.id}</div>
+        <div class="tags">
+          <span class="tag tag-unit">${p.unit}</span>
+          <span class="tag tag-score ${scoreClass}">${p.score}점</span>
+          <span class="tag tag-unit" style="background:#f1f5f9;color:#475569;border-color:#cbd5e1">${p.type}</span>
+        </div>
+        <div class="expand-btn"><span>문제 보기</span><div class="expand-icon">▼</div></div>
+      </div>
+      <div class="key-point">
+        <span class="key-label">핵심풀이</span>
+        <span class="key-text">${p.keyPoint}</span>
+      </div>
+      <div class="card-body">
+        ${problemSection}
+        ${solutionSection}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── 이미지 오류 처리 ──────────────────────────────────────────
+function handleImgError(img, id, type) {
+  // 이미지 로드 실패 → 텍스트로 폴백
+  img.closest('.exam-img-wrap').style.display = 'none';
+  document.getElementById('qtxt-' + id).style.display = 'block';
+}
+
+function handleAnsImgError(img, id, base, idx) {
+  // 다음 번호 시도 (멀티파트 풀이: -1_A, -2_A, ...)
+  const nextSrc = `${base}-${idx}_A.jpg`;
+  if (idx === 1) {
+    // 단일 _A.jpg 실패 → -1_A.jpg 시도
+    img.onerror = () => handleAnsImgError(img, id, base, idx + 1);
+    img.src = nextSrc;
+  } else if (idx <= 6) {
+    // 멀티파트: 이전 번호 성공 → 다음 파트 추가 시도
+    const wrap = document.getElementById('awrap-' + id);
+    const newImg = document.createElement('div');
+    newImg.className = 'exam-img-wrap';
+    newImg.innerHTML = `<img class="exam-img" src="${nextSrc}" alt="풀이" onclick="openZoom(this.src)" onerror="this.closest('.exam-img-wrap').remove(); checkAnsEmpty('${id}', '${base}')">`;
+    wrap.appendChild(newImg);
+  }
+}
+
+function checkAnsEmpty(id, base) {
+  const wrap = document.getElementById('awrap-' + id);
+  if (wrap && wrap.querySelectorAll('img').length === 0) {
+    document.getElementById('atxt-' + id).style.display = 'block';
+  }
+}
+
+// ── 카드 토글 ─────────────────────────────────────────────────
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('open');
+  const btn = card.querySelector('.expand-btn span');
+  btn.textContent = card.classList.contains('open') ? '접기' : '문제 보기';
+}
+
+// ── 줌 ───────────────────────────────────────────────────────
+function openZoom(src) {
+  document.getElementById('zoomOverlayImg').src = src;
+  document.getElementById('zoomOverlay').classList.add('open');
+}
+function closeZoom() {
+  document.getElementById('zoomOverlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+
+init();
+</script>
+</body>
+</html>
