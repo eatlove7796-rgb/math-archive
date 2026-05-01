@@ -267,6 +267,13 @@ function applyFilters() {
       p.keyPoint.includes(searchKeyword);
     return gradeOk && scoreOk && unitOk && kwOk;
   });
+  // 단원, 배점 같으면 연도→월 순 정렬
+  filteredProblems.sort((a, b) => {
+    if (a.unit !== b.unit) return 0;
+    if (a.score !== b.score) return 0;
+    if (a.year !== b.year) return a.year - b.year;
+    return a.month - b.month;
+  });
   renderCards(filteredProblems);
 }
 
