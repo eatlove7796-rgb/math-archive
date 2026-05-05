@@ -246,7 +246,7 @@ function init() {
   document.getElementById('searchInput').addEventListener('keyup', e => {
     if (e.key === 'Enter') doSearch();
   });
-  renderCards(PROBLEMS);
+  applyFilters();
 }
 
 function doSearch() {
