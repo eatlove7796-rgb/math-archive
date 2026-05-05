@@ -283,6 +283,16 @@ function applyFilters() {
   renderCards(filteredProblems);
 }
 
+// ── HTML 이스케이프 ───────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── 카드 렌더링 ───────────────────────────────────────────────
 function renderCards(problems) {
   const grid = document.getElementById('cardsGrid');
@@ -311,7 +321,7 @@ function renderCards(problems) {
                onerror="handleImgError(this, '${cid}', 'q')">
         </div>
         <div id="qtxt-${cid}" style="display:none">
-          ${p.figure ? `<div class="problem-text">${p.problem}</div>${p.figure}` : `<div class="problem-text">${p.problem}</div>`}
+          ${p.figure ? `<div class="problem-text">${esc(p.problem)}</div>${p.figure}` : `<div class="problem-text">${esc(p.problem)}</div>`}
           ${p.choices.length > 0 ? `<div class="choices">${p.choices.map((c,idx)=>{
             const isCorrect = p.answerNum === idx+1;
             return `<div class="choice ${isCorrect?'correct':''}"><span class="choice-num">${['①','②','③','④','⑤'][idx]}</span><span>${c}${isCorrect?' ✓':''}</span></div>`;
@@ -334,7 +344,7 @@ function renderCards(problems) {
           </div>
         </div>
         <div id="atxt-${cid}" style="display:none">
-          <div class="solution-text">${p.solution}</div>
+          <div class="solution-text">${esc(p.solution)}</div>
         </div>
       </div>`;
 
@@ -350,7 +360,7 @@ function renderCards(problems) {
       </div>
       <div class="key-point">
         <span class="key-label">핵심풀이</span>
-        <span class="key-text">${p.keyPoint}</span>
+        <span class="key-text">${esc(p.keyPoint)}</span>
       </div>
       <div class="card-body">
         ${problemSection}
