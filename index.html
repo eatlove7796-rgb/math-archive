@@ -259,9 +259,12 @@ function applyFilters() {
     const gradeOk = activeGrade === 'all' || p.grade === parseInt(activeGrade);
     const scoreOk = activeScore === 'all' || p.score === parseInt(activeScore);
     const unitOk = activeUnit === 'all' || p.unit === activeUnit;
+    const gradeStr = `고${p.grade}`;
     const kwOk = !searchKeyword ||
       p.id.toLowerCase().includes(searchKeyword) ||
+      gradeStr.includes(searchKeyword) ||
       p.unit.includes(searchKeyword) ||
+      (p.unit === '방정식과부등식' && '방정식과 부등식'.includes(searchKeyword)) ||
       p.keywords.some(k => k.includes(searchKeyword)) ||
       p.problem.includes(searchKeyword) ||
       p.keyPoint.includes(searchKeyword);
