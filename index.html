@@ -292,6 +292,7 @@ function renderCards(problems) {
   }
 
   grid.innerHTML = problems.map((p, i) => {
+    const cid = `c${i}`;
     const scoreClass = p.score === 2 ? 's2' : p.score === 3 ? 's3' : 's4';
     const urls = buildImgUrls(p);
 
@@ -299,14 +300,14 @@ function renderCards(problems) {
     const problemSection = `
       <div class="problem-section">
         <div class="section-title">문제</div>
-        <div class="exam-img-wrap" id="qwrap-${p.id}">
+        <div class="exam-img-wrap" id="qwrap-${cid}">
           <img class="exam-img" 
                src="${urls.q}" 
                alt="문제 ${p.num}"
                onclick="openZoom(this.src)"
-               onerror="handleImgError(this, '${p.id}', 'q')">
+               onerror="handleImgError(this, '${cid}', 'q')">
         </div>
-        <div id="qtxt-${p.id}" style="display:none">
+        <div id="qtxt-${cid}" style="display:none">
           ${p.figure ? `<div class="problem-text">${p.problem}</div>${p.figure}` : `<div class="problem-text">${p.problem}</div>`}
           ${p.choices.length > 0 ? `<div class="choices">${p.choices.map((c,idx)=>{
             const isCorrect = p.answerNum === idx+1;
@@ -320,22 +321,22 @@ function renderCards(problems) {
       <div class="solution-section">
         <div class="section-title">해설</div>
         <div class="answer-badge">정답: ${p.answer}</div>
-        <div id="awrap-${p.id}">
+        <div id="awrap-${cid}">
           <div class="exam-img-wrap">
             <img class="exam-img"
                  src="${urls.aBase}_A.jpg"
                  alt="풀이 ${p.num}"
                  onclick="openZoom(this.src)"
-                 onerror="handleAnsImgError(this, '${p.id}', '${urls.aBase}', 1)">
+                 onerror="handleAnsImgError(this, '${cid}', '${urls.aBase}', 1)">
           </div>
         </div>
-        <div id="atxt-${p.id}" style="display:none">
+        <div id="atxt-${cid}" style="display:none">
           <div class="solution-text">${p.solution}</div>
         </div>
       </div>`;
 
-    return `<div class="card" id="card-${p.id}" style="animation-delay:${i*0.03}s">
-      <div class="card-header" onclick="toggleCard('${p.id}')">
+    return `<div class="card" id="card-${cid}" style="animation-delay:${i*0.03}s">
+      <div class="card-header" onclick="toggleCard('${cid}')">
         <div class="problem-id">${p.id}</div>
         <div class="tags">
           <span class="tag tag-unit">${p.unit}</span>
